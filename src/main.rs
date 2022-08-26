@@ -13,14 +13,14 @@ fn main() {
 
     stream.write("<protocol><join/>".as_bytes()).unwrap();
 
-    let mut global_buffer: Cursor<[u8; 100000]> = Cursor::new([0; 100000]);
+    let mut global_buffer: Cursor<[u8; 5000]> = Cursor::new([0; 5000]);
     let mut global_n: usize = 0usize;
     let mut msg = 0;
 
     let _r = std::fs::create_dir("msg");
 
     loop {
-        let mut buffer = [0; 100000];
+        let mut buffer = [0; 5000];
 
         let n = stream.read(&mut buffer[..]).unwrap();
 
@@ -37,7 +37,7 @@ fn main() {
             file.write(&g_buff_in[..global_n]).unwrap();
             msg += 1;
 
-            global_buffer = Cursor::new([0; 100000]);
+            global_buffer = Cursor::new([0; 5000]);
             global_n = 0usize;
         } else {
             global_buffer.write(&buffer[..n]).unwrap();
