@@ -11,12 +11,14 @@ const SERVER_ADRESS: &str = "127.0.0.1:13050";
 fn main() {
     let mut stream = TcpStream::connect(SERVER_ADRESS).unwrap();
 
+    // Send join message
     stream.write("<protocol><join/>".as_bytes()).unwrap();
 
     let mut global_buffer: Cursor<[u8; 5000]> = Cursor::new([0; 5000]);
     let mut global_n: usize = 0usize;
     let mut msg = 0;
 
+    // Create folder for msgs if it doesnt exist
     let _r = std::fs::create_dir("msg");
 
     loop {
@@ -27,7 +29,7 @@ fn main() {
         if buffer.starts_with(b"<protocol>") {
             println!("Joined room");
             println!("Room id: {}", get_room_id(&buffer));
-        } else if buffer[n-7..n] == "</room>".as_bytes().to_owned() {
+        } else if buffer[n-7..n] == "</room>".as_bytes().to_owned() { // returns true, if the data in the buffer ends with </room>
             global_buffer.write(&buffer[..n]).unwrap();
             global_n += n;
 
@@ -40,6 +42,7 @@ fn main() {
             global_buffer = Cursor::new([0; 5000]);
             global_n = 0usize;
         } else {
+            // Add buffer data to the global buffer and add n to the global n
             global_buffer.write(&buffer[..n]).unwrap();
             global_n += n;
         }
