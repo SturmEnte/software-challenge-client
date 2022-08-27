@@ -6,7 +6,6 @@ pub fn get_room_id(xml: &[u8]) -> String {
     reader.trim_text(true);
     reader.expand_empty_elements(true);
 
-    let mut txt = Vec::new();
     let mut buf = Vec::new();
     
     loop {
@@ -19,7 +18,6 @@ pub fn get_room_id(xml: &[u8]) -> String {
                     _ => (),
                 }
             },
-            Ok(Event::Text(e)) => txt.push(e.unescape_and_decode(&reader).unwrap()),
             Ok(Event::Eof) => break,
             Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
             _ => (), 
