@@ -1,14 +1,20 @@
 mod utils;
+mod parse_message;
+mod game_data;
 
+use std::sync::Mutex;
 use std::net::TcpStream;
 use std::io::{Write, Read, Cursor};
-use std::str::from_utf8;
 
-use utils::get_room_id::*;
+use game_data::GameData;
+use utils::get_room_id::get_room_id;
+use parse_message::parse_message;
 
 const SERVER_ADRESS: &str = "127.0.0.1:13050";
 
 fn main() {
+    let game_data: Mutex<GameData> = Mutex::new(GameData::new());
+
     let mut stream = TcpStream::connect(SERVER_ADRESS).unwrap();
 
     // Send join message
@@ -33,11 +39,14 @@ fn main() {
             global_buffer.write(&buffer[..n]).unwrap();
             global_n += n;
 
-            let g_buff_in = global_buffer.into_inner();
-            println!("Message: \n{}", from_utf8(&g_buff_in[..global_n]).unwrap());
-            let mut file = std::fs::File::create(format!("msg/msg{msg}.xml")).unwrap();
-            file.write(&g_buff_in[..global_n]).unwrap();
-            msg += 1;
+            //let g_buff_in = global_buffer.into_inner();
+            // println!("Message: \n{}", from_utf8(&g_buff_in[..global_n]).unwrap());
+            // let mut file = std::fs::File::create(format!("msg/msg{msg}.xml")).unwrap();
+            // file.write(&g_buff_in[..global_n]).unwrap();
+            // msg += 1;
+            // parse_room_msg(g_buff_in);
+
+            parse_message(global_buffer.into_inner(), global_n, &game_data);
 
             global_buffer = Cursor::new([0; 5000]);
             global_n = 0usize;
