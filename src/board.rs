@@ -3,6 +3,10 @@ pub struct Board {
 }
 
 impl Board {
+	pub fn new() -> Board {
+		Board { board: [[0; 16]; 8] }
+	}
+
 	pub fn get_field(&self, x: usize, y: usize) -> i8 {
 		self.board[y][x]
 	}
