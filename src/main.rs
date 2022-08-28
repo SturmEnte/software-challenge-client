@@ -52,7 +52,11 @@ fn main() {
             // file.write(&g_buff_in[..global_n]).unwrap();
             // msg += 1;
 
-            parse_message(global_buffer.into_inner(), global_n, &game_data, &mut stream);
+            let game_end = parse_message(global_buffer.into_inner(), global_n, &game_data, &mut stream);
+
+            if game_end {
+                break;
+            }
 
             global_buffer = Cursor::new([0; 5000]);
             global_n = 0usize;

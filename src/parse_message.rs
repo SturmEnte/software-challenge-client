@@ -11,7 +11,7 @@ use crate::GameData;
 use crate::compute::compute_move;
 use crate::Move;
 
-pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut TcpStream) {
+pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut TcpStream) -> bool {
 
     let message = &buffer[..n];
 
@@ -47,7 +47,10 @@ pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, 
                                 }
                                 stream.write(send_str.as_bytes()).unwrap();
                             },
-                            "result" => {println!("Result");process::exit(1);},
+                            "result" => {
+                                println!("Result");
+                                return true;
+                            },
                             _ => (),
                         }
                     },
@@ -60,7 +63,7 @@ pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, 
         }
         buf.clear();
     }
-
+    false
 }
 
 fn welcome_message(e: &BytesStart, data: &Mutex<GameData>) {
