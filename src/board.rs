@@ -1,10 +1,11 @@
 pub struct Board {
 	pub board: [[i8; 16]; 8],
+	pub initialized: bool,
 }
 
 impl Board {
 	pub fn new() -> Board {
-		Board { board: [[0; 16]; 8] }
+		Board { board: [[0; 16]; 8], initialized: false }
 	}
 
 	pub fn get_field(&self, x: usize, y: usize) -> i8 {
