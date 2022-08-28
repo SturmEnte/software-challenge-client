@@ -16,6 +16,23 @@ impl Board {
 		self.board[y][x] = value;
 	}
 
+	pub fn get_same_fields(&self, content: i8) -> Vec<(i8, i8)> {
+		let mut same_fields: Vec<(i8, i8)> = Vec::new();
+		let mut x: i8 = 0;
+		let mut y: i8 = 0;
+		self.board.iter().for_each(|line| {
+			line.iter().for_each(|field| {
+				if field == &content {
+					same_fields.push((x, y));
+				}
+				x += 1;
+			});
+			y += 1;
+			x = 0;
+		});
+		return same_fields;
+	}
+
 	pub fn print(&self) {
 		let mut i = 0;
 		for _y in self.board {
@@ -23,7 +40,7 @@ impl Board {
 			for x in self.board[i] {
 				let v: String;
 				if x == 0 {
-					v = String::from("X");
+					v = String::from(".");
 				} else if x == -1 {
 					v = String::from("λ");
 				} else if x == -2 {

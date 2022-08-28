@@ -1,3 +1,4 @@
+//use std::collections::btree_map::Values;
 use std::sync::Mutex;
 use std::str::from_utf8;
 
@@ -22,14 +23,17 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
 
     let mut i = -1;
 
-    let mut turn: i16 = 0;
+    let mut turn: i8 = 0;
+
+    let mut from_team: i8 = 0 - game_data.team; //later changed if opponent made move
 
     loop {
         match reader.read_event(&mut buf) {
             Ok(Event::Start(ref e)) => {
                 match e.name() {
                     b"state" => {
-                        turn = String::from_utf8(e.try_get_attribute("turn").unwrap().unwrap().value.to_vec()).unwrap().parse::<i16>().unwrap();
+                        turn = String::from_utf8(e.try_get_attribute("turn").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                        game_data.turn = turn;
                     },
                     b"list" => {
                         if !first_y {
@@ -53,34 +57,28 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
                             first_x = false;
                         }
                     },
+                    b"from" => {
+                        let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        from_team = game_data.board.get_field(x, y);
+                        game_data.board.set_field(x, y, 0);
+                    },
                     b"to" => {
                         let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
                         let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
 
-                        if game_data.start_team == game_data.team {
-                            if turn % 2 == 0 {
-                                let val = 0 - game_data.opponent.to_owned();
-                                game_data.board.set_field(x, y, val);
-                            }
-                        } else {
-                            if turn % 2 != 0 {
-                                let val = 0 - game_data.opponent.to_owned();
-                                game_data.board.set_field(x, y, val);
-                            }
-                        }
-                    },
-                    b"from" => {
-                        let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        if game_data.start_team == game_data.team {
-                            if turn % 2 == 0 {
-                                game_data.board.set_field(x, y, 0);
-                            }
-                        } else {
-                            if turn % 2 != 0 {
-                                game_data.board.set_field(x, y, 0);
+                        if turn <= 7 {
+                            if game_data.start_team == game_data.team {
+                                if turn % 2 == 0 {
+                                    from_team = 0 - game_data.opponent.to_owned();
+                                }
+                            } else {
+                                if turn % 2 != 0 {
+                                    from_team = 0 - game_data.opponent.to_owned();
+                                }
                             }
                         }
+                        game_data.board.set_field(x, y, from_team);
                     }
                     _ => (),
                 }

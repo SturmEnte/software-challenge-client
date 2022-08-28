@@ -1,12 +1,17 @@
 use std::sync::Mutex;
+use std::net::TcpStream;
+use std::io::Write;
+use std::process;
 
 use quick_xml::Reader;
 use quick_xml::events::{Event, BytesStart};
 
 use crate::parse_memento::parse_memento;
 use crate::GameData;
+use crate::compute::compute_move;
+use crate::Move;
 
-pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>) {
+pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut TcpStream) {
 
     let message = &buffer[..n];
 
@@ -29,8 +34,20 @@ pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>) 
                                 println!("Memento");
                                 parse_memento(&message, &game_data);
                             },
-                            "moveRequest" => {println!("Move Request");},
-                            "result" => {println!("Result");},
+                            "moveRequest" => {
+                                println!("Move Request");
+                                let mv: Move = compute_move(&game_data);
+                                mv.print();
+                                let send_str: String;
+                                if mv.from_x == -1{
+                                    send_str = format!(r#"<room roomId="{}"><data class="move"><to x="{}" y="{}"/></data></room>"#, game_data.lock().unwrap().room_id, mv.to_x, mv.to_y);
+                                }
+                                else {
+                                    send_str = format!(r#"<room roomId="{}"><data class="move"><from x="{}" y="{}"/><to x="{}" y="{}"/></data></room>"#, game_data.lock().unwrap().room_id, mv.from_x, mv.from_y, mv.to_x, mv.to_y);
+                                }
+                                stream.write(send_str.as_bytes()).unwrap();
+                            },
+                            "result" => {println!("Result");process::exit(1);},
                             _ => (),
                         }
                     },
