@@ -1,5 +1,5 @@
 pub struct Board {
-	pub board: Vec<Vec<i8>>,
+	pub board: [[i8; 16]; 8],
 }
 
 impl Board {
