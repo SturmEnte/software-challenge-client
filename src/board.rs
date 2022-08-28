@@ -14,4 +14,26 @@ impl Board {
 	pub fn set_field(&mut self, x: usize, y: usize, value: i8) {
 		self.board[y][x] = value;
 	}
+
+	pub fn print(&self) {
+		let mut i = 0;
+		for y in self.board {
+			print!("Y {} |", i + 1);
+			for x in self.board[i] {
+				let mut v = String::new();
+				if x == 0 {
+					v = String::from("X");
+				} else if x == -1 {
+					v = String::from("λ");
+				} else if x == -2 {
+					v = String::from("ω");
+				} else {
+					v = x.to_string();
+				}
+				print!(" {v}")
+			}
+			print!("\n");
+			i += 1;
+		}
+	}
 }
