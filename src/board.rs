@@ -30,7 +30,7 @@ impl Board {
 				} else {
 					v = x.to_string();
 				}
-				print!(" {v}")
+				print!(" {v}");
 			}
 			print!("\n");
 			i += 1;
