@@ -1,6 +1,8 @@
 mod utils;
 mod parse_message;
+mod parse_memento;
 mod game_data;
+mod board;
 
 use std::sync::Mutex;
 use std::net::TcpStream;

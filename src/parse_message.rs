@@ -2,9 +2,11 @@ use std::sync::Mutex;
 
 use quick_xml::Reader;
 use quick_xml::events::{Event, BytesStart};
+
+use crate::parse_memento::parse_memento;
 use crate::GameData;
 
-pub fn parse_message(buffer: [u8; 5000], n: usize, data: &Mutex<GameData>) {
+pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>) {
 
     let message = &buffer[..n];
 
@@ -22,8 +24,11 @@ pub fn parse_message(buffer: [u8; 5000], n: usize, data: &Mutex<GameData>) {
                         let class = String::from_utf8(e.try_get_attribute("class").unwrap().unwrap().value.to_vec()).unwrap();
 
                         match class.as_str() {
-                            "welcomeMessage" => welcome_message(e, &data),
-                            "memento" => {println!("Memento");},
+                            "welcomeMessage" => welcome_message(e, &game_data),
+                            "memento" => {
+                                println!("Memento");
+                                parse_memento(&message, &game_data);
+                            },
                             "moveRequest" => {println!("Move Request");},
                             "result" => {println!("Result");},
                             _ => (),
