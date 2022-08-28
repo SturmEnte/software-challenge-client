@@ -17,7 +17,7 @@ impl Board {
 
 	pub fn print(&self) {
 		let mut i = 0;
-		for y in self.board {
+		for _y in self.board {
 			print!("Y {} |", i + 1);
 			for x in self.board[i] {
 				let mut v = String::new();
