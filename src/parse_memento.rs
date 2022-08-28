@@ -67,7 +67,7 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
                         let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
                         let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
 
-                        if turn <= 7 {
+                        if turn <= 8 {
                             if game_data.start_team == game_data.team {
                                 if turn % 2 == 0 {
                                     from_team = 0 - game_data.opponent.to_owned();
