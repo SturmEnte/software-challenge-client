@@ -1,7 +1,6 @@
 use std::sync::Mutex;
 use std::net::TcpStream;
 use std::io::Write;
-use std::process;
 
 use quick_xml::Reader;
 use quick_xml::events::{Event, BytesStart};
