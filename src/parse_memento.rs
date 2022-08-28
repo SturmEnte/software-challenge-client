@@ -19,7 +19,7 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
     let mut y = 0;
     let mut x = 0;
 
-    let mut ii = -1;
+    let mut i = -1;
 
     loop {
         match reader.read_event(&mut buf) {
