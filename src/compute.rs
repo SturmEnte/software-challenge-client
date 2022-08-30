@@ -6,12 +6,12 @@ use crate::Move;
 pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
     let mut pmvs: Vec<Move> = Vec::new();
     let game_data = game_data.lock().unwrap();
-    if game_data.turn <= 7 { //is startmove
+    if game_data.turn <= 7 { // startmove
         game_data.board.get_same_fields(1).iter().for_each(|field| {
             pmvs.push(Move {from_x: -1, from_y: -1, to_x: field.0, to_y: field.1});
         });
     }
-    else { //is normal move
+    else { // normal move
         let mut dest_x: i8 = 0;
         let mut dest_y: i8 = 0;
         game_data.board.get_same_fields(0-game_data.team).iter().for_each(|position| {
