@@ -22,6 +22,8 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
     let mut dest_y: i8 = 0;
 
     game_data.board.get_same_fields(0-game_data.team).iter().for_each(|position| {
+        // Check for possible moves in every direction
+        // The tuples are all possible direction
         [(2,0),(-2,0),(1,1),(1,-1),(-1,1),(-1,-1)].iter().for_each(|direction| {
             dest_x = position.0;
             dest_y = position.1;
