@@ -10,7 +10,7 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
 
     // Start move
     if game_data.turn <= 7 {
-        game_data.board.get_same_fields(1).iter().for_each(|field| {
+        game_data.board.get_same_fields(1).iter().for_each(|field: &(i8, i8)| {
             possible_moves.push(Move {from_x: -1, from_y: -1, to_x: field.0, to_y: field.1});
         });
 
@@ -21,10 +21,10 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
     let mut dest_x: i8 = 0;
     let mut dest_y: i8 = 0;
 
-    game_data.board.get_same_fields(0-game_data.team).iter().for_each(|position| {
+    game_data.board.get_same_fields(0-game_data.team).iter().for_each(|position: &(i8, i8)| {
         // Check for possible moves in every direction
         // The tuples are all possible direction
-        [(2,0),(-2,0),(1,1),(1,-1),(-1,1),(-1,-1)].iter().for_each(|direction| {
+        [(2,0),(-2,0),(1,1),(1,-1),(-1,1),(-1,-1)].iter().for_each(|direction: &(i8, i8)| {
             dest_x = position.0;
             dest_y = position.1;
 
