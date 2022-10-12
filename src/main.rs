@@ -29,8 +29,8 @@ fn main() {
     let mut global_n: usize = 0usize;
     let mut _msg = 0;
 
-    // Create folder for msgs if it doesnt exist
-    let _r = std::fs::create_dir("msg");
+    // // Create folder for msgs if it doesnt exist
+    // let _r = std::fs::create_dir("msg");
 
     loop {
         let mut buffer = [0; 5000];
