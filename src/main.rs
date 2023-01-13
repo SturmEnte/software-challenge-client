@@ -13,17 +13,20 @@ use std::io::{Write, Read, Cursor};
 use game_data::GameData;
 use game_move::Move;
 use utils::get_room_id::get_room_id;
+use utils::get_cmd_args::get_join_info;
 use parse_message::parse_message;
-
-const SERVER_ADRESS: &str = "127.0.0.1:13050";
 
 fn main() {
     let game_data: Mutex<GameData> = Mutex::new(GameData::new());
 
-    let mut stream = TcpStream::connect(SERVER_ADRESS).unwrap();
+    let join_info: (String, String) = get_join_info();
+    let server_address: &str = join_info.0.as_str();
+    let join_msg: &str = join_info.1.as_str();
+     
+    let mut stream = TcpStream::connect(server_address).unwrap();
 
     // Send join message
-    stream.write("<protocol><join/>".as_bytes()).unwrap();
+    stream.write(join_msg.as_bytes()).unwrap();
 
     let mut global_buffer: Cursor<[u8; 5000]> = Cursor::new([0; 5000]);
     let mut global_n: usize = 0usize;
