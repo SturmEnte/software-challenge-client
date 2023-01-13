@@ -30,15 +30,15 @@ fn main() {
 
     let mut global_buffer: Cursor<[u8; 5000]> = Cursor::new([0; 5000]);
     let mut global_n: usize = 0usize;
-    let mut _msg = 0;
+    let mut _msg: i32 = 0;
 
-    // Create folder for msgs if it doesnt exist
-    let _r = std::fs::create_dir("msg");
+    // // Create folder for msgs if it doesnt exist
+    // let _r = std::fs::create_dir("msg");
 
     loop {
-        let mut buffer = [0; 5000];
+        let mut buffer: [u8; 5000] = [0; 5000];
 
-        let n = stream.read(&mut buffer[..]).unwrap();
+        let n: usize = stream.read(&mut buffer[..]).unwrap();
 
         if buffer.starts_with(b"<protocol>") {
             println!("Joined room");
@@ -55,7 +55,7 @@ fn main() {
             // file.write(&g_buff_in[..global_n]).unwrap();
             // msg += 1;
 
-            let game_end = parse_message(global_buffer.into_inner(), global_n, &game_data, &mut stream);
+            let game_end: bool = parse_message(global_buffer.into_inner(), global_n, &game_data, &mut stream);
 
             if game_end {
                 break;

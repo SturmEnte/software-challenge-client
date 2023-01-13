@@ -1,5 +1,5 @@
 //use std::collections::btree_map::Values;
-use std::sync::Mutex;
+use std::sync::{Mutex, MutexGuard};
 use std::str::from_utf8;
 
 use quick_xml::Reader;
@@ -8,20 +8,20 @@ use quick_xml::events::Event;
 use crate::GameData;
 
 pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
-    let mut game_data = game_data.lock().unwrap();
+    let mut game_data: MutexGuard<GameData> = game_data.lock().unwrap();
 
-    let mut reader = Reader::from_bytes(&message);
+    let mut reader: Reader<&[u8]> = Reader::from_bytes(&message);
     reader.trim_text(true);
     reader.expand_empty_elements(true);
 
-    let mut buf = Vec::new();
+    let mut buf: Vec<u8> = Vec::new();
 
-    let mut first_y = true;
-    let mut first_x = true;
-    let mut y = 0;
-    let mut x = 0;
+    let mut first_y: bool = true;
+    let mut first_x: bool = true;
+    let mut y: usize = 0;
+    let mut x: usize = 0;
 
-    let mut i = -1;
+    let mut i: i32 = -1;
 
     let mut turn: i8 = 0;
 
@@ -58,14 +58,14 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
                         }
                     },
                     b"from" => {
-                        let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        let x: usize = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        let y: usize = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
                         from_team = game_data.board.get_field(x, y);
                         game_data.board.set_field(x, y, 0);
                     },
                     b"to" => {
-                        let x = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        let y = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        let x: usize = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
+                        let y: usize = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
 
                         if turn <= 8 {
                             if game_data.start_team == game_data.team {
@@ -85,7 +85,7 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
             },
             Ok(Event::Text(e)) => {
                 if !game_data.board.initialized {
-                    let txt = from_utf8(e.unescaped().unwrap().into_owned().as_slice()).unwrap().to_string();
+                    let txt: String = from_utf8(e.unescaped().unwrap().into_owned().as_slice()).unwrap().to_string();
 
                     if i == -1 {
                         game_data.set_start_team(&from_utf8(e.unescaped().unwrap().into_owned().as_slice()).unwrap().to_string());

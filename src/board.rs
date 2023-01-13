@@ -20,8 +20,8 @@ impl Board {
 		let mut same_fields: Vec<(i8, i8)> = Vec::new();
 		let mut x: i8 = 0;
 		let mut y: i8 = 0;
-		self.board.iter().for_each(|line| {
-			line.iter().for_each(|field| {
+		self.board.iter().for_each(|line: &[i8; 16]| {
+			line.iter().for_each(|field: &i8| {
 				if field == &content {
 					same_fields.push((x, y));
 				}
@@ -34,7 +34,7 @@ impl Board {
 	}
 
 	pub fn print(&self) {
-		let mut i = 0;
+		let mut i: usize = 0;
 		for _y in self.board {
 			print!("Y {} |", i + 1);
 			for x in self.board[i] {

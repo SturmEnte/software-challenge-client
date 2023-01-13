@@ -12,20 +12,20 @@ use crate::Move;
 
 pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut TcpStream) -> bool {
 
-    let message = &buffer[..n];
+    let message: &[u8] = &buffer[..n];
 
-    let mut reader = Reader::from_bytes(&message);
+    let mut reader: Reader<&[u8]> = Reader::from_bytes(&message);
     reader.trim_text(true);
     reader.expand_empty_elements(true);
 
-    let mut buf = Vec::new();
+    let mut buf: Vec<u8> = Vec::new();
     
     loop {
         match reader.read_event(&mut buf) {
             Ok(Event::Start(ref e)) => {
                 match e.name() {
                     b"data" => {
-                        let class = String::from_utf8(e.try_get_attribute("class").unwrap().unwrap().value.to_vec()).unwrap();
+                        let class: String = String::from_utf8(e.try_get_attribute("class").unwrap().unwrap().value.to_vec()).unwrap();
 
                         match class.as_str() {
                             "welcomeMessage" => welcome_message(e, &game_data),

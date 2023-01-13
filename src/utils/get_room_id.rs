@@ -2,11 +2,11 @@ use quick_xml::Reader;
 use quick_xml::events::Event;
 
 pub fn get_room_id(xml: &[u8]) -> String {
-    let mut reader = Reader::from_bytes(xml);
+    let mut reader: Reader<&[u8]> = Reader::from_bytes(xml);
     reader.trim_text(true);
     reader.expand_empty_elements(true);
 
-    let mut buf = Vec::new();
+    let mut buf: Vec<u8> = Vec::new();
     
     loop {
         match reader.read_event(&mut buf) {
