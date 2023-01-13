@@ -1,3 +1,6 @@
+// PROBLEM!!!!!
+// CLIENT EXECUTES MOVES FROM EMTPY SPACES INSTED OF FROM PLAYERS SOMETIEMES!!!!
+
 mod utils;
 mod parse_message;
 mod parse_memento;
@@ -17,6 +20,7 @@ use utils::get_cmd_args::get_join_info;
 use parse_message::parse_message;
 
 fn main() {
+    println!("Version: 1");
     let game_data: Mutex<GameData> = Mutex::new(GameData::new());
 
     let join_info: (String, String) = get_join_info();
