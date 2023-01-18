@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 use std::sync::MutexGuard;
+use std::time::Instant;
 
 use crate::GameData;
 use crate::Move;
@@ -9,7 +10,7 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
     let game_data: MutexGuard<GameData> = game_data.lock().unwrap();
 
     // Start move
-    if game_data.turn <= 7 {
+    if game_data.turn <= 8 {
         game_data.board.get_same_fields(1).iter().for_each(|field: &(i8, i8)| {
             possible_moves.push(Move {from_x: -1, from_y: -1, to_x: field.0, to_y: field.1});
         });
@@ -23,7 +24,7 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
 
     game_data.board.get_same_fields(0-game_data.team).iter().for_each(|position: &(i8, i8)| {
         // Check for possible moves in every direction
-        // The tuples are all possible direction
+        // The tuples are all possible directions
         [(2,0),(-2,0),(1,1),(1,-1),(-1,1),(-1,-1)].iter().for_each(|direction: &(i8, i8)| {
             dest_x = position.0;
             dest_y = position.1;
@@ -49,7 +50,16 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
 }
 
 pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
+    let max_time: u128 = 1900;
+    let start_time = Instant::now();
     let possible_moves: Vec<Move> = get_possible_moves(&game_data);
     let moves: &Move = possible_moves.first().unwrap();
+    /*loop {
+        println!("running");
+        if start_time.elapsed().as_millis() >= max_time {
+            println!("done");
+            break;
+        }        
+    }*/
     Move { from_x: moves.from_x, from_y: moves.from_y, to_x: moves.to_x, to_y: moves.to_y }
 }
