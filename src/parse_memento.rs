@@ -6,6 +6,7 @@ use quick_xml::Reader;
 use quick_xml::events::Event;
 
 use crate::GameData;
+use crate::game_move::Move;
 
 pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
     let mut game_data: MutexGuard<GameData> = game_data.lock().unwrap();
@@ -23,18 +24,17 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
 
     let mut i: i32 = -1;
 
-    let mut turn: i8 = 0;
-
-    let mut from_team: i8 = 0 - game_data.team; //later changed if opponent made move
+    let mut mv: Move = Move {from_x: -1, from_y: -1, to_x: -1, to_y: -1};
 
     loop {
         match reader.read_event(&mut buf) {
             Ok(Event::Start(ref e)) => {
                 match e.name() {
-                    b"state" => {
-                        turn = String::from_utf8(e.try_get_attribute("turn").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
-                        game_data.turn = turn;
-                    },
+                    //this is now done in game_data.apply_move()
+                    //b"state" => {
+                    //    turn = String::from_utf8(e.try_get_attribute("turn").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                    //    game_data.turn = turn;
+                    //},
                     b"list" => {
                         if !first_y {
                             y += 1;
@@ -58,27 +58,17 @@ pub fn parse_memento (message: &[u8], game_data: &Mutex<GameData>) {
                         }
                     },
                     b"from" => {
-                        let x: usize = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        let y: usize = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        from_team = game_data.board.get_field(x, y);
-                        game_data.board.set_field(x, y, 0);
+                        let x: i8 = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                        let y: i8 = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                        mv.from_x = x;
+                        mv.from_y = y;
                     },
                     b"to" => {
-                        let x: usize = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-                        let y: usize = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<usize>().unwrap();
-
-                        if turn <= 8 {
-                            if game_data.start_team == game_data.team {
-                                if turn % 2 == 0 {
-                                    from_team = 0 - game_data.opponent.to_owned();
-                                }
-                            } else {
-                                if turn % 2 != 0 {
-                                    from_team = 0 - game_data.opponent.to_owned();
-                                }
-                            }
-                        }
-                        game_data.board.set_field(x, y, from_team);
+                        let x: i8 = String::from_utf8(e.try_get_attribute("x").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                        let y: i8 = String::from_utf8(e.try_get_attribute("y").unwrap().unwrap().value.to_vec()).unwrap().parse::<i8>().unwrap();
+                        mv.to_x = x;
+                        mv.to_y = y;
+                        game_data.apply_move(&mv);
                     }
                     _ => (),
                 }
