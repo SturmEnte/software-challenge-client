@@ -50,7 +50,7 @@ pub fn get_possible_moves(game_data: &Mutex<GameData>) -> Vec<Move> {
 }
 
 pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
-    let max_time: u128 = 1900;
+    let max_time: u128 = 1900; //u128 for compatibility with start_time.elapsed()
     let start_time = Instant::now();
     let possible_moves: Vec<Move> = get_possible_moves(&game_data);
     let moves: &Move = possible_moves.first().unwrap();

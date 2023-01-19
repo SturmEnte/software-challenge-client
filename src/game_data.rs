@@ -9,12 +9,14 @@ pub struct GameData {
     pub turn: i8,
     pub room_id: String,
     pub fishes_team: i8,
-    pub fishes_opponent: i8
+    pub fishes_opponent: i8,
+    pub team_blocked: bool,
+    pub opponent_blocked: bool
 }
 
 impl GameData {
     pub fn new() -> GameData {
-        GameData { team: 0, board: Board::new(), start_team: 0, opponent: 0, turn: 1, room_id: String::new(), fishes_team: 0, fishes_opponent: 0 } //tuen 1, because in turn 0 apply_move is not executed
+        GameData { team: 0, board: Board::new(), start_team: 0, opponent: 0, turn: 1, room_id: String::new(), fishes_team: 0, fishes_opponent: 0, team_blocked: false, opponent_blocked: false } //tuen 1, because in turn 0 apply_move is not executed
     }
     
     pub fn set_team(&mut self, team: &String) {
