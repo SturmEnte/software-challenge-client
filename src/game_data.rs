@@ -66,4 +66,9 @@ impl GameData {
 
         self.turn += 1;
 	}
+
+    pub fn static_evaluation(&self) -> i8 {
+        //rates the current game state and returns an i8 number
+        return self.fishes_team-self.fishes_opponent;
+    }
 }
