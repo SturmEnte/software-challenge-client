@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub struct Board {
 	pub board: [[i8; 16]; 8],
 	pub initialized: bool,

@@ -6,6 +6,10 @@ pub struct Move {
 }
 
 impl Move {
+    pub fn new() -> Move {
+        Move { from_x: -1, from_y: -1, to_x: -1, to_y: -1 }
+    }
+
     pub fn print(&self) {
         if self.from_x == -1 {
             println!("To:  X: {}, Y: {}", self.to_x, self.to_y);
