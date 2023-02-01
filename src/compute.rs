@@ -54,7 +54,7 @@ pub fn get_possible_moves(game_data: &GameData, use_opponent: bool) -> Vec<Move>
     return possible_moves;
 }
 
-pub fn minimax(game_data: &GameData, depth: i8, maximizing_player: bool) -> i32 {
+pub fn minimax(game_data: &GameData, depth: i8, mut alpha: i32, mut beta: i32, maximizing_player: bool) -> i32 {
     if depth == 0 || game_data.game_over {
         return game_data.static_evaluation();
     }
@@ -63,8 +63,12 @@ pub fn minimax(game_data: &GameData, depth: i8, maximizing_player: bool) -> i32 
         for mv in get_possible_moves(game_data, false) {
             let mut new_game_data = game_data.copy();
             new_game_data.apply_move(&mv);
-            let eval: i32 = minimax(&new_game_data,depth-1,false);
+            let eval: i32 = minimax(&new_game_data,depth-1, alpha, beta,false);
             max_eval = max(max_eval, eval);
+            alpha = max(alpha, eval);
+            if beta <= alpha {
+                break;
+            }
         }
         return max_eval;
     }
@@ -73,15 +77,19 @@ pub fn minimax(game_data: &GameData, depth: i8, maximizing_player: bool) -> i32 
         for mv in get_possible_moves(game_data, true) {
             let mut new_game_data: GameData = game_data.copy();
             new_game_data.apply_move(&mv);
-            let eval: i32 = minimax(game_data, depth-1, true);
+            let eval: i32 = minimax(game_data, depth-1, alpha, beta, true);
             min_eval = min(min_eval, eval);
+            beta = min(beta, eval);
+            if beta <= alpha {
+                break;
+            }
         }
         return min_eval;
     }
 }
 
 pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
-    let minimax_depth: i8 = 2;
+    let minimax_depth: i8 = 3;
     let game_data: MutexGuard<GameData> = game_data.lock().unwrap();
     let max_time: u128 = 1900; //u128 for compatibility with start_time.elapsed()
     let start_time = Instant::now();
@@ -90,7 +98,7 @@ pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
     for mv in possible_moves {
         let mut new_game_data: GameData = game_data.copy();
         new_game_data.apply_move(&mv);
-        let rating: i32 = minimax(&new_game_data, minimax_depth, true);
+        let rating: i32 = minimax(&new_game_data, minimax_depth, -2147483648, 2147483647, true);
         mv.print();
         println!("rating: {}", rating);
         rated_moves.push((mv, rating));
