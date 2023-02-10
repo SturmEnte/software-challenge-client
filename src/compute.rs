@@ -104,7 +104,7 @@ pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
             let mv = &possible_moves[i];
             let mut new_game_data: GameData = game_data.copy();
             new_game_data.apply_move(&mv);
-            let rating: i32 = minimax(&new_game_data, minimax_depth, -2147483648, 2147483647, true, max_time, start_time);
+            let rating: i32 = minimax(&new_game_data, minimax_depth, i32::MIN, i32::MAX, true, max_time, start_time);
             //mv.print();
             //println!("rating: {}", rating);
             rated_moves.push((mv, rating));
