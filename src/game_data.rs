@@ -84,9 +84,66 @@ impl GameData {
         self.turn += 1;
 	}
 
+    pub fn get_possible_moves_count(&self, use_opponent: bool) -> i32 {
+        let mut count: i32 = 0;
+
+        // Start move
+        if self.turn <= 8 {
+            count = self.board.get_same_fields_count(1);
+            return count;
+        }
+
+        // Normal move
+        let mut dest_x: i8 = 0;
+        let mut dest_y: i8 = 0;
+
+        let mut requested_team: i8 = self.team;
+        if use_opponent {
+            requested_team = self.opponent;
+        }
+
+        self.board.get_same_fields(0-requested_team).iter().for_each(|position: &(i8, i8)| {
+            // Check for possible moves in every direction
+            // The tuples are all possible directions
+            [(2,0),(-2,0),(1,1),(1,-1),(-1,1),(-1,-1)].iter().for_each(|direction: &(i8, i8)| {
+                dest_x = position.0;
+                dest_y = position.1;
+
+                loop {
+                    dest_x += direction.0;
+                    dest_y += direction.1;
+
+                    if dest_x > 15 || dest_y > 7 || dest_x < 0 || dest_y < 0 {
+                        break
+                    }
+
+                    if self.board.get_field(dest_x as usize, dest_y as usize) < 1 {
+                        break
+                    }
+
+                    count += 1;
+                }
+            });
+        });
+
+        return count;
+    }
+
     pub fn static_evaluation(&self) -> i32 {
         //rates the current game state and returns an i32 number
-        return (self.fishes_team-self.fishes_opponent) as i32;
+        let mut rating: i32 = 0;
+        rating += self.get_possible_moves_count(false)-self.get_possible_moves_count(true);
+        if self.team_blocked {
+            rating -= 10000;
+        }
+        if self.opponent_blocked {
+            rating += 10000;
+        }
+        if self.game_over {
+            rating = (self.fishes_team-self.fishes_opponent) as i32 * 1000000;
+        }
+
+        return rating;
     }
 
     pub fn copy(&self) -> GameData {
