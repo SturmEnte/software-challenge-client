@@ -58,11 +58,13 @@ pub fn minimax(game_data: &GameData, depth: i8, mut alpha: i32, mut beta: i32, m
     if start_time.elapsed().as_millis() >= max_time {
         return 0;
     }
+
     if depth == 0 || game_data.game_over {
         return game_data.static_evaluation();
     }
+
     if maximizing_player {
-        let mut max_eval: i32 = -2147483648; //minimum i32 value
+        let mut max_eval: i32 = i32::MIN;
         for mv in get_possible_moves(game_data, false) {
             let mut new_game_data = game_data.copy();
             new_game_data.apply_move(&mv);
@@ -74,9 +76,8 @@ pub fn minimax(game_data: &GameData, depth: i8, mut alpha: i32, mut beta: i32, m
             }
         }
         return max_eval;
-    }
-    else {
-        let mut min_eval: i32 = 2147483647; //maximum i32 value
+    } else {
+        let mut min_eval: i32 = i32::MAX;
         for mv in get_possible_moves(game_data, true) {
             let mut new_game_data: GameData = game_data.copy();
             new_game_data.apply_move(&mv);
@@ -99,43 +100,55 @@ pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
     let possible_moves: Vec<Move> = get_possible_moves(&game_data, false);
     let mut rated_moves: Vec<(&Move, i32)> = Vec::new();
     let mut fully_rated_moves: Vec<(&Move, i32)> = Vec::new();
+
     loop {
         for i in 0..possible_moves.len() {
             let mv = &possible_moves[i];
             let mut new_game_data: GameData = game_data.copy();
             new_game_data.apply_move(&mv);
-            let rating: i32 = minimax(&new_game_data, minimax_depth, -2147483648, 2147483647, true, max_time, start_time);
+            let rating: i32 = minimax(&new_game_data, minimax_depth, i32::MIN, i32::MAX, true, max_time, start_time);
             //mv.print();
             //println!("rating: {}", rating);
             rated_moves.push((mv, rating));
         }
+        
         if start_time.elapsed().as_millis() >= max_time {
             println!("GAME OVER!! DEPTH: {}", minimax_depth);
             break;
         }
+        
         fully_rated_moves = Vec::new();
+        
         for i in 0..rated_moves.len() {
             fully_rated_moves.push(rated_moves[i])
         }
+        
         minimax_depth += 1;
+
         if minimax_depth >= 10 {
             break;
         }
     }
+
     let mut the_mv: Move = Move::new();
-    let mut the_mv_rating: i32 = -2147483648; //minimum i32 value
+    let mut the_mv_rating: i32 = i32::MIN;
+
     for rated_mv in fully_rated_moves {
         if rated_mv.1 > the_mv_rating {
             the_mv = Move { from_x: rated_mv.0.from_x, from_y: rated_mv.0.from_y, to_x: rated_mv.0.to_x, to_y: rated_mv.0.to_y };
             the_mv_rating = rated_mv.1;
         }
     }
-    /*loop {
+
+    /*  
+    loop {
         println!("running");
         if start_time.elapsed().as_millis() >= max_time {
             println!("done");
             break;
         }        
-    }*/
+    }
+    */
+    
     Move { from_x: the_mv.from_x, from_y: the_mv.from_y, to_x: the_mv.to_x, to_y: the_mv.to_y }
 }
