@@ -34,6 +34,23 @@ impl Board {
 		return same_fields;
 	}
 
+	pub fn get_same_fields_count(&self, content: i8) -> i32 {
+		let mut count: i32 = 0;
+		let mut x: i8 = 0;
+		let mut y: i8 = 0;
+		self.board.iter().for_each(|line: &[i8; 16]| {
+			line.iter().for_each(|field: &i8| {
+				if field == &content {
+					count += 1;
+				}
+				x += 1;
+			});
+			y += 1;
+			x = 0;
+		});
+		return count;
+	}
+
 	pub fn print(&self) {
 		let mut i: usize = 0;
 		for _y in self.board {
