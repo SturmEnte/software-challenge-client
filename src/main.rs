@@ -21,7 +21,7 @@ use utils::get_cmd_args::get_join_info;
 use parse_message::parse_message;
 
 fn main() {
-    println!("Version: 1");
+    println!("Version: 2");
     let game_data: Mutex<GameData> = Mutex::new(GameData::new());
 
     let join_info: (String, String) = get_join_info();
