@@ -132,7 +132,8 @@ impl GameData {
     pub fn static_evaluation(&self) -> i32 {
         //rates the current game state and returns an i32 number
         let mut rating: i32 = 0;
-        rating += self.get_possible_moves_count(false)-self.get_possible_moves_count(true);
+        rating += (self.get_possible_moves_count(false)-self.get_possible_moves_count(true)) * 30;
+        rating += (self.fishes_team-self.fishes_opponent) as i32 * 100;
         if self.team_blocked {
             rating -= 10000;
         }
