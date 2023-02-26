@@ -137,6 +137,13 @@ pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
     best_mv.print();
     println!("Rating: {}\n", best_mv_rating);
 
+    println!("\nPOSSIBLE MOVES -+-+-+-+-+-+-+-+-+-+-+-");
+    for mv in get_possible_moves(&game_data.copy(), false) {
+        println!("Move --- --- ---");
+        mv.print();
+    }
+    println!("POSSIBLE MOVES -+-+-+-+-+-+-+-+-+-+-+-\n");
+
     /*loop {
         println!("running");
         if start_time.elapsed().as_millis() >= max_time {
