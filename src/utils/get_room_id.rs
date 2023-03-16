@@ -25,5 +25,5 @@ pub fn get_room_id(xml: &[u8]) -> String {
         buf.clear();
     }
 
-    panic!("No room id found")
+    String::from("-")
 }

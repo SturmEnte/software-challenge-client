@@ -10,7 +10,7 @@ use crate::GameData;
 use crate::compute::compute_move;
 use crate::Move;
 
-pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut TcpStream) -> bool {
+pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, stream: &mut Option<&mut TcpStream>, replay_mode: &bool) -> bool {
 
     let message: &[u8] = &buffer[..n];
 
@@ -44,7 +44,11 @@ pub fn parse_message(buffer: [u8; 5000], n: usize, game_data: &Mutex<GameData>, 
                                 else {
                                     send_str = format!(r#"<room roomId="{}"><data class="move"><from x="{}" y="{}"/><to x="{}" y="{}"/></data></room>"#, game_data.lock().unwrap().room_id, mv.from_x, mv.from_y, mv.to_x, mv.to_y);
                                 }
-                                stream.write(send_str.as_bytes()).unwrap();
+                                
+                                if !replay_mode {
+                                    stream.as_mut().unwrap().write(send_str.as_bytes()).unwrap();
+                                }
+
                             },
                             "result" => {
                                 println!("Result");
