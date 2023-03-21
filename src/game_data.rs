@@ -12,12 +12,14 @@ pub struct GameData {
     pub fishes_opponent: i8,
     pub team_blocked: bool,
     pub opponent_blocked: bool,
-    pub game_over: bool
+    pub game_over: bool,
+    pub maximizing_player_bool: bool, //used for minimax after opponent team is blocked
+    pub minimizing_player_bool: bool  //used for minimax after our team is blocked
 }
 
 impl GameData {
     pub fn new() -> GameData {
-        GameData { team: 0, board: Board::new(), start_team: 0, opponent: 0, turn: 1, room_id: String::new(), fishes_team: 0, fishes_opponent: 0, team_blocked: false, opponent_blocked: false, game_over: false } //turn 1, because in turn 0 apply_move is not executed
+        GameData { team: 0, board: Board::new(), start_team: 0, opponent: 0, turn: 1, room_id: String::new(), fishes_team: 0, fishes_opponent: 0, team_blocked: false, opponent_blocked: false, game_over: false, maximizing_player_bool: false, minimizing_player_bool: true } //turn 1, because in turn 0 apply_move is not executed
     }
     
     pub fn set_team(&mut self, team: &String) {
@@ -68,12 +70,14 @@ impl GameData {
         if !self.team_blocked {
             if !self.can_move(false) {
                 self.team_blocked = true;
+                self.minimizing_player_bool = false;
             }
         }
 
         if !self.opponent_blocked {
             if !self.can_move(true) {
                 self.opponent_blocked = true;
+                self.maximizing_player_bool = true;
             }
         }
 
@@ -148,7 +152,7 @@ impl GameData {
     }
 
     pub fn copy(&self) -> GameData {
-        GameData { board: self.board, start_team: self.start_team, team: self.team, opponent: self.opponent, turn: self.turn, room_id: self.room_id.clone(), fishes_team: self.fishes_team, fishes_opponent: self.fishes_opponent, team_blocked: self.team_blocked, opponent_blocked: self.opponent_blocked, game_over: self.game_over }
+        GameData { board: self.board, start_team: self.start_team, team: self.team, opponent: self.opponent, turn: self.turn, room_id: self.room_id.clone(), fishes_team: self.fishes_team, fishes_opponent: self.fishes_opponent, team_blocked: self.team_blocked, opponent_blocked: self.opponent_blocked, game_over: self.game_over, maximizing_player_bool: self.maximizing_player_bool, minimizing_player_bool: self.minimizing_player_bool }
     }
 
     fn can_move(&self, use_opponent: bool) -> bool {

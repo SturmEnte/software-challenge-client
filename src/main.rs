@@ -22,7 +22,7 @@ use utils::get_room_id::get_room_id;
 use utils::get_cmd_args::get_join_info;
 use parse_message::parse_message;
 
-const REPLAY_MODE: bool = true;
+const REPLAY_MODE: bool = false;
 
 fn main() {
     println!("Version: 2");

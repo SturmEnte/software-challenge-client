@@ -66,7 +66,7 @@ pub fn minimax(game_data: &GameData, depth: i8, mut alpha: i32, mut beta: i32, m
         for mv in get_possible_moves(game_data, false) {
             let mut new_game_data = game_data.copy();
             new_game_data.apply_move(&mv);
-            let eval: i32 = minimax(&new_game_data,depth-1, alpha, beta,false, max_time, start_time);
+            let eval: i32 = minimax(&new_game_data,depth-1, alpha, beta, new_game_data.maximizing_player_bool, max_time, start_time);
             max_eval = max(max_eval, eval);
             alpha = max(alpha, eval);
             if beta <= alpha {
@@ -80,7 +80,7 @@ pub fn minimax(game_data: &GameData, depth: i8, mut alpha: i32, mut beta: i32, m
         for mv in get_possible_moves(game_data, true) {
             let mut new_game_data: GameData = game_data.copy();
             new_game_data.apply_move(&mv);
-            let eval: i32 = minimax(game_data, depth-1, alpha, beta, true, max_time, start_time);
+            let eval: i32 = minimax(game_data, depth-1, alpha, beta, new_game_data.minimizing_player_bool, max_time, start_time);
             min_eval = min(min_eval, eval);
             beta = min(beta, eval);
             if beta <= alpha {
