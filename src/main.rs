@@ -21,8 +21,11 @@ use game_move::Move;
 use utils::get_room_id::get_room_id;
 use utils::get_cmd_args::get_join_info;
 use parse_message::parse_message;
+use parse_memento::parse_memento_from_str;
+use compute::compute_move;
 
 const REPLAY_MODE: bool = false;
+const COMPUTE_TEST: bool = true;
 
 fn main() {
     println!("Version: 2");
@@ -89,6 +92,17 @@ fn main() {
                 global_n += n;
             }
         }
+
+    } else if COMPUTE_TEST {
+        let mut file = File::open("mementos/memento.xml").expect("File \"mementos/memento.xml\" could not be found");
+        
+        let mut memento = String::new();
+        file.read_to_string(&mut memento).unwrap();
+        println!("{}", memento);
+        
+        parse_memento_from_str(&memento, &game_data);
+
+        compute_move(&game_data);
 
     } else {
         let mut stream = TcpStream::connect(server_address).unwrap();
