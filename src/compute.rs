@@ -144,13 +144,5 @@ pub fn compute_move(game_data: &Mutex<GameData>) -> Move {
     }
     println!("POSSIBLE MOVES END -+-+-+-+-+-+-+-+-+-+-+-\n");
 
-    /*loop {
-        println!("running");
-        if start_time.elapsed().as_millis() >= max_time {
-            println!("done");
-            break;
-        }        
-    }*/
-
     Move { from_x: best_mv.from_x, from_y: best_mv.from_y, to_x: best_mv.to_x, to_y: best_mv.to_y }
 }
