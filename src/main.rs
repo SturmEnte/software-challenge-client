@@ -25,7 +25,7 @@ use parse_memento::parse_memento_from_str;
 use compute::compute_move;
 
 const REPLAY_MODE: bool = false;
-const COMPUTE_TEST: bool = true;
+const COMPUTE_TEST: bool = false;
 
 fn main() {
     println!("Version: 2");
