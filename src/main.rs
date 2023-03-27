@@ -19,8 +19,8 @@ use parse_message::parse_message;
 use parse_memento::parse_memento_from_str;
 use compute::compute_move;
 
-const COMPUTE_TEST: bool = false;
-const VERSION: u8 = 2;
+const COMPUTE_TEST: bool = false
+const VERSION: u8 = 3;
 
 fn main() {
     println!("Version: {}", VERSION);
